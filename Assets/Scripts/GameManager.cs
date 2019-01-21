@@ -20,6 +20,9 @@ namespace MemClientGame.Assets.Scripts
                 }
                 Debug.Log(cmdInfo);
                 Debug.Log(GetArg("-projectpath"));
+                Debug.Log(GetArg("-serverip"));
+                Debug.Log(GetArg("-serverport"));
+                Debug.Log(GetArg("-roomname"));
             /*
             _colyseusClient = new ColyseusClient("localhost", "8080");
             await _colyseusClient.ConnectToServer();
