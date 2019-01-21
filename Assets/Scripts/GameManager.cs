@@ -9,25 +9,24 @@ namespace MemClientGame.Assets.Scripts
     public class GameManager : MonoBehaviour
     {
         private ColyseusClient _colyseusClient;
-        private string cmdInfo = "";
         // Start is called before the first frame update
         public async void Start()
         {
-            string[] arguments = Environment.GetCommandLineArgs();
-                foreach(string arg in arguments)
-                {
-                    cmdInfo += arg.ToString() + "\n ";
-                }
-                Debug.Log(cmdInfo);
-                Debug.Log(GetArg("-projectpath"));
-                Debug.Log(GetArg("-serverip"));
-                Debug.Log(GetArg("-serverport"));
-                Debug.Log(GetArg("-roomname"));
-            /*
-            _colyseusClient = new ColyseusClient("localhost", "8080");
+            var serverip = GetArg("-serverip");
+            serverip = serverip != null ? serverip : "localhost";
+            Debug.Log(serverip);
+
+            var serverport = GetArg("-serverport");
+            serverport = serverport != null ? serverport : "8080";
+            Debug.Log(serverport);
+
+            var roomname = GetArg("-roomname");
+            roomname = roomname != null ? roomname : "match";
+            Debug.Log(roomname);
+
+            _colyseusClient = new ColyseusClient(serverip, serverport);
             await _colyseusClient.ConnectToServer();
-            var room = _colyseusClient.JoinRoom("match");
-            */
+            var room = _colyseusClient.JoinRoom(roomname);
         }
         private static string GetArg(string name)
         {
