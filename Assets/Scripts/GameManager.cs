@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using MemClientGame.Assets.Scripts.Network;
 using System;
 
@@ -8,6 +9,7 @@ namespace MemClientGame.Assets.Scripts
 {
     public class GameManager : MonoBehaviour
     {
+        public Text serverText; 
         private ColyseusClient _colyseusClient;
         // Start is called before the first frame update
         public async void Start()
@@ -23,6 +25,8 @@ namespace MemClientGame.Assets.Scripts
             var roomname = GetArg("-roomname");
             roomname = roomname != null ? roomname : "match";
             Debug.Log(roomname);
+
+            serverText.text = serverip + ":" + serverport + " room: " + roomname;
 
             _colyseusClient = new ColyseusClient(serverip, serverport);
             await _colyseusClient.ConnectToServer();
