@@ -46,9 +46,11 @@ namespace MemClientGame.Assets.Scripts.Network
             }
         }
 
-        public Room JoinRoom(string roomName)
+        public Room JoinRoom(string roomName, string token)
         {
-            Room room = _client.Join(roomName);
+            var options = new Dictionary<string, object>();
+            options.Add("token", token);
+            Room room = _client.Join(roomName, options);
             _rooms.Add(room);
 
             room.OnReadyToConnect += async (sender, e) =>

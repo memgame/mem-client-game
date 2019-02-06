@@ -26,11 +26,14 @@ namespace MemClientGame.Assets.Scripts
             roomname = roomname != null ? roomname : "match";
             Debug.Log(roomname);
 
+            var token = GetArg("-token");
+            Debug.Log(token);
+
             serverText.text = serverip + ":" + serverport + " room: " + roomname;
 
             _colyseusClient = new ColyseusClient(serverip, serverport);
             await _colyseusClient.ConnectToServer();
-            var room = _colyseusClient.JoinRoom(roomname);
+            var room = _colyseusClient.JoinRoom(roomname, token);
         }
         private static string GetArg(string name)
         {
