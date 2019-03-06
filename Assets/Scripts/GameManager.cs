@@ -4,13 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using MemClientGame.Assets.Scripts.Network;
 using System;
+using MemClientGame.Assets.Scripts.Network.Listeners.Players;
 
 namespace MemClientGame.Assets.Scripts
 {
     public class GameManager : MonoBehaviour
     {
         public Text serverText; 
+        public GameObject _prefabPlayer;
         private ColyseusClient _colyseusClient;
+        private Dictionary<string, GameObject> _players = new Dictionary<string, GameObject>();
         // Start is called before the first frame update
         public async void Start()
         {
@@ -34,6 +37,7 @@ namespace MemClientGame.Assets.Scripts
             _colyseusClient = new ColyseusClient(serverip, serverport);
             await _colyseusClient.ConnectToServer();
             var room = _colyseusClient.JoinRoom(roomname, token);
+            room.Listen(ListenerPlayers.LISTENER_PATH, new ListenerPlayers(_players, _prefabPlayer).OnChange);
         }
         private static string GetArg(string name)
         {
