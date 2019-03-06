@@ -24,7 +24,6 @@ namespace MemClientGame.Assets.Scripts.Network
             _client = new Client(_serverUri);
             //_client.OnClose += (object sender, EventArgs e) => Debug.Log("ColyseusClient connection closed");
             _rooms = new List<Room>();
-
         }
 
         public async Task<bool> ConnectToServer()
@@ -51,6 +50,7 @@ namespace MemClientGame.Assets.Scripts.Network
             var options = new Dictionary<string, object>();
             options.Add("token", token);
             Room room = _client.Join(roomName, options);
+            Debug.Log("sessionid" + room.id);
             _rooms.Add(room);
 
             room.OnReadyToConnect += async (sender, e) =>

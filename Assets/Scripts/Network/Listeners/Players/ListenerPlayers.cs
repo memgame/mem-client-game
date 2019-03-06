@@ -9,10 +9,10 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
     public class ListenerPlayers : IRoomListener
     {
         public const string LISTENER_PATH = "players/:id";
-        GameManager _gameManger;
+        private GameManager _gameManager;
         public ListenerPlayers(GameManager gameManager)
         {
-            _gameManger = gameManager;
+            _gameManager = gameManager;
         }
         public void OnChange(DataChange obj)
         {
@@ -35,8 +35,13 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
 
         private void OperationAdd(JToken jsonObj) {
             string playerId = jsonObj["path"]["id"].ToString();
-            GameObject player = Object.Instantiate(_gameManger.PrefabPlayer);
-            _gameManger.Players.Add(playerId, player);
+            GameObject player = Object.Instantiate(_gameManager.PrefabPlayer);
+            _gameManager.Players.Add(playerId, player);
+
+            if (playerId == _gameManager.GameRoom.sessionId)
+            {
+                _gameManager.CameraTarget = player.transform;
+            }
             Debug.Log(jsonObj);
             Debug.Log("Player add");
         }
@@ -48,9 +53,9 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
 
         private void OperationRemove(JToken jsonObj) {
             string playerId = jsonObj["path"]["id"].ToString();
-            GameObject player = _gameManger.Players[playerId];
+            GameObject player = _gameManager.Players[playerId];
             Object.Destroy(player);
-            _gameManger.Players.Remove(playerId);
+            _gameManager.Players.Remove(playerId);
             Debug.Log(jsonObj);
             Debug.Log("Player remove");
         }
