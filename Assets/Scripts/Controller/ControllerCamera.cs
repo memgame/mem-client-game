@@ -27,6 +27,25 @@ namespace MemClientGame.Assets.Scripts.Controller
                 UnityEditor.EditorApplication.isPlaying = false;
                 #endif
             }
+
+            if(Input.GetMouseButtonDown(1) && GameManager.GameRoom != null)
+            {
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if(Physics.Raycast(ray, out hit, Mathf.Infinity))
+                {
+                    Debug.Log(hit.point);
+                    GameManager.GameRoom.Send(new
+                    {
+                        ACTION_TYPE = "MOVE_PLAYER_TO",
+                        payload = new
+                        {
+                            hit.point.x,
+                            hit.point.z
+                        }
+                    });
+                }
+            }
         }
 
         public void LateUpdate()
