@@ -37,7 +37,7 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
 
         private void OperationAdd(JToken jsonObj) {
             string playerId = jsonObj["path"]["id"].ToString();
-            GameObject player = GameManager.Instantiate(_prefabPlayer);
+            GameObject player = Object.Instantiate(_prefabPlayer);
             _players.Add(playerId, player);
             Debug.Log(jsonObj);
             Debug.Log("Player add");
@@ -51,7 +51,7 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
         private void OperationRemove(JToken jsonObj) {
             string playerId = jsonObj["path"]["id"].ToString();
             GameObject player = _players[playerId];
-            GameManager.Destroy(player);
+            Object.Destroy(player);
             _players.Remove(playerId);
             Debug.Log(jsonObj);
             Debug.Log("Player remove");
