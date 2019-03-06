@@ -5,15 +5,18 @@ using UnityEngine.UI;
 using MemClientGame.Assets.Scripts.Network;
 using System;
 using MemClientGame.Assets.Scripts.Network.Listeners.Players;
+using Colyseus;
 
 namespace MemClientGame.Assets.Scripts
 {
     public class GameManager : MonoBehaviour
     {
-        public Text serverText; 
-        public GameObject _prefabPlayer;
+        public Text ServerText; 
+        public GameObject PrefabPlayer;
+        public Transform CameraTarget;
+        public Room GameRoom;
+        public Dictionary<string, GameObject> Players = new Dictionary<string, GameObject>();
         private ColyseusClient _colyseusClient;
-        private Dictionary<string, GameObject> _players = new Dictionary<string, GameObject>();
         // Start is called before the first frame update
         public async void Start()
         {
@@ -32,12 +35,12 @@ namespace MemClientGame.Assets.Scripts
             var token = GetArg("-token");
             Debug.Log(token);
 
-            serverText.text = serverip + ":" + serverport + " room: " + roomname;
+            ServerText.text = serverip + ":" + serverport + " room: " + roomname;
 
             _colyseusClient = new ColyseusClient(serverip, serverport);
             await _colyseusClient.ConnectToServer();
-            var room = _colyseusClient.JoinRoom(roomname, token);
-            room.Listen(ListenerPlayers.LISTENER_PATH, new ListenerPlayers(_players, _prefabPlayer).OnChange);
+            GameRoom = _colyseusClient.JoinRoom(roomname, token);
+            GameRoom.Listen(ListenerPlayers.LISTENER_PATH, new ListenerPlayers(this).OnChange);
         }
         private static string GetArg(string name)
         {

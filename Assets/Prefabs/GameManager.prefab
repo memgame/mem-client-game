@@ -43,6 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c129fcec28860fe4e85a0affe2a842f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  serverText: {fileID: 0}
-  _prefabPlayer: {fileID: 6697355960511021521, guid: 10b24eda2b8617e4bbd87876f344f201,
+  ServerText: {fileID: 0}
+  PrefabPlayer: {fileID: 6697355960511021521, guid: 10b24eda2b8617e4bbd87876f344f201,
     type: 3}
+  TransformCameraTarget: {fileID: 0}

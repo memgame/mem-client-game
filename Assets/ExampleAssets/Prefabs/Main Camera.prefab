@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6714305928430291609}
   - component: {fileID: 6714305928430291615}
   - component: {fileID: 6714305928430291588}
+  - component: {fileID: 7164964372476656414}
   - component: {fileID: 6714305928430291608}
   m_Layer: 0
   m_Name: Main Camera
@@ -27,13 +28,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6714305928430291614}
-  m_LocalRotation: {x: -0.022829367, y: 0.97616255, z: -0.17340644, w: -0.12851411}
-  m_LocalPosition: {x: 2.34, y: 1.2, z: 2.37}
+  m_LocalRotation: {x: 0.5299192, y: 0, z: 0, w: 0.8480481}
+  m_LocalPosition: {x: 0, y: 13, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 20.146, y: 195, z: 0}
+  m_LocalEulerAnglesHint: {x: 64, y: 0, z: 0}
 --- !u!20 &6714305928430291609
 Camera:
   m_ObjectHideFlags: 0
@@ -143,7 +144,7 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
---- !u!114 &6714305928430291608
+--- !u!114 &7164964372476656414
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -151,6 +152,21 @@ MonoBehaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6714305928430291614}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc40aec3c17fcb6418a4a887d35ceed5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GameManager: {fileID: 0}
+  OffsetCamera: {x: 0, y: 13, z: -5}
+  SpeedCamera: 0.125
+--- !u!114 &6714305928430291608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6714305928430291614}
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6547d18b2bc62c94aa5ec1e87434da4e, type: 3}
   m_Name: 
