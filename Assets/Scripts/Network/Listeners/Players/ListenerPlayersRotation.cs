@@ -1,16 +1,20 @@
-﻿using Colyseus;
-using MemClientGame.Assets.Scripts.Controller;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Colyseus;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
 {
-    public class ListenerPlayersPosition : IRoomListener
+    public class ListenerPlayersRotation : IRoomListener
     {
-        public const string LISTENER_PATH = "players/:id/position/:attribute";
+        public const string LISTENER_PATH = "players/:id/rotation";
         private GameManager _gameManager;
-        public ListenerPlayersPosition(GameManager gameManager)
+        public ListenerPlayersRotation(GameManager gameManager)
         {
             _gameManager = gameManager;
         }
@@ -35,28 +39,28 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
 
         private void OperationAdd(JToken jsonObj)
         {
+            Debug.Log(jsonObj);
+            Debug.Log("PlayerRotation add");
         }
 
         private void OperationReplace(JToken jsonObj)
         {
             string playerId = jsonObj["path"]["id"].ToString();
-            string attribute = jsonObj["path"]["attribute"].ToString();
             float value = float.Parse(jsonObj["value"].ToString());
+            Debug.Log("hey" + Time.fixedTime);
+            Debug.Log(value);
 
-            ControllerPlayer player = _gameManager.Players[playerId].GetComponent<ControllerPlayer>();
+            GameObject player = _gameManager.Players[playerId];
+            player.transform.eulerAngles = new Vector3(0, value, 0);
 
-            if (attribute == "x")
-            {
-                player.MoveTo.x = value;
-
-            } else if (attribute == "z")
-            {
-                player.MoveTo.z = value;
-            }
+            Debug.Log(jsonObj);
+            Debug.Log("PlayerRotation replace");
         }
 
         private void OperationRemove(JToken jsonObj)
         {
+            Debug.Log(jsonObj);
+            Debug.Log("PlayerRotation remove");
         }
     }
 }

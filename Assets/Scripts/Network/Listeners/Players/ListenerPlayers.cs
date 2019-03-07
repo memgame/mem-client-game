@@ -37,6 +37,7 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
             string playerId = jsonObj["path"]["id"].ToString();
             string name = jsonObj["value"]["name"].ToString();
             float moveSpeed = float.Parse(jsonObj["value"]["moveSpeed"].ToString());
+            float rotation = float.Parse(jsonObj["value"]["rotation"].ToString());
             //int health = int.Parse(jsonObj["value"]["health"].ToString());
             float positionX = float.Parse(jsonObj["value"]["position"]["x"].ToString());
             float positionY = float.Parse(jsonObj["value"]["position"]["y"].ToString());
@@ -44,6 +45,7 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
 
 
             GameObject player = Object.Instantiate(_gameManager.PrefabPlayer, new Vector3(positionX, positionY, positionZ), new Quaternion());
+            player.transform.eulerAngles = new Vector3(0, rotation, 0);
             _gameManager.Players.Add(playerId, player);
 
             if (playerId == _gameManager.GameRoom.sessionId)
