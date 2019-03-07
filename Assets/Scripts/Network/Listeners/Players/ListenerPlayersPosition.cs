@@ -47,11 +47,11 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
 
             if (attribute == "x")
             {
-                player.MoveTo.x = value;
+                player.DesiredPosition.x = value;
 
             } else if (attribute == "z")
             {
-                player.MoveTo.z = value;
+                player.DesiredPosition.z = value;
             }
         }
 

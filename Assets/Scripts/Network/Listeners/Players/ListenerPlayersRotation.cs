@@ -47,9 +47,6 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
         {
             string playerId = jsonObj["path"]["id"].ToString();
             float value = float.Parse(jsonObj["value"].ToString());
-            Debug.Log("hey" + Time.fixedTime);
-            Debug.Log(value);
-
             GameObject player = _gameManager.Players[playerId];
             player.transform.eulerAngles = new Vector3(0, value, 0);
 
