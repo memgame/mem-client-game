@@ -35,7 +35,15 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
 
         private void OperationAdd(JToken jsonObj) {
             string playerId = jsonObj["path"]["id"].ToString();
-            GameObject player = Object.Instantiate(_gameManager.PrefabPlayer);
+            string name = jsonObj["value"]["name"].ToString();
+            float moveSpeed = float.Parse(jsonObj["value"]["moveSpeed"].ToString());
+            //int health = int.Parse(jsonObj["value"]["health"].ToString());
+            float positionX = float.Parse(jsonObj["value"]["position"]["x"].ToString());
+            float positionY = float.Parse(jsonObj["value"]["position"]["y"].ToString());
+            float positionZ = float.Parse(jsonObj["value"]["position"]["z"].ToString());
+
+
+            GameObject player = Object.Instantiate(_gameManager.PrefabPlayer, new Vector3(positionX, positionY, positionZ), new Quaternion());
             _gameManager.Players.Add(playerId, player);
 
             if (playerId == _gameManager.GameRoom.sessionId)
