@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a8ea0350a68514bb6b06934f2066ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveTo: {x: 0, y: 0, z: 0}
-  SpeedLerp: 0.3
+  DesiredPosition: {x: 0, y: 0, z: 0}
+  SpeedLerp: 0.25
   LocomationAnimationSmoothTime: 0.1
   LocomationAnimationSpeedPercent: 0
 --- !u!1001 &2039212599253367485

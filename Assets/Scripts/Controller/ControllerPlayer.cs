@@ -32,8 +32,7 @@ namespace MemClientGame.Assets.Scripts.Controller
             {
                 var currentPosition = transform.position;
                 var distance = Vector3.Distance(currentPosition, DesiredPosition);
-                Debug.Log(distance);
-                LocomationAnimationSpeedPercent = distance > 0.05 ? .6f : 0;
+                LocomationAnimationSpeedPercent = distance > 0.1 ? .6f : 0;
             } else
             {
                 LocomationAnimationSpeedPercent = 0;
