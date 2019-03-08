@@ -158,7 +158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameManager: {fileID: 0}
   OffsetCamera: {x: 0, y: 10, z: -5}
-  SpeedCamera: 0.125
+  SpeedCamera: 0.05
 --- !u!114 &6714305928430291608
 MonoBehaviour:
   m_ObjectHideFlags: 0

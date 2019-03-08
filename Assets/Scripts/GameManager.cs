@@ -42,6 +42,7 @@ namespace MemClientGame.Assets.Scripts
             GameRoom = _colyseusClient.JoinRoom(roomname, token);
             GameRoom.Listen(ListenerPlayers.LISTENER_PATH, new ListenerPlayers(this).OnChange);
             GameRoom.Listen(ListenerPlayersPosition.LISTENER_PATH, new ListenerPlayersPosition(this).OnChange);
+            GameRoom.Listen(ListenerPlayersLocomationAnimationSpeedPercent.LISTENER_PATH, new ListenerPlayersLocomationAnimationSpeedPercent(this).OnChange);
             GameRoom.Listen(ListenerPlayersRotation.LISTENER_PATH, new ListenerPlayersRotation(this).OnChange);
         }
         private static string GetArg(string name)

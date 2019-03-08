@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DesiredPosition: {x: 0, y: 0, z: 0}
-  SpeedLerp: 0.25
-  LocomationAnimationSmoothTime: 0.1
+  SpeedLerp: 0.085
+  LocomationAnimationSmoothTime: 0.125
   LocomationAnimationSpeedPercent: 0
 --- !u!1001 &2039212599253367485
 PrefabInstance:
