@@ -5,6 +5,7 @@ namespace MemClientGame.Assets.Scripts.Controller
     class ControllerPlayer : MonoBehaviour
     {
         public Vector3 DesiredPosition;
+        public Vector3 DesiredRotation;
         public float SpeedLerp;
         public float LocomationAnimationSmoothTime = .1f;
         public float LocomationAnimationSpeedPercent = 0;
@@ -24,6 +25,12 @@ namespace MemClientGame.Assets.Scripts.Controller
                 var t = Time.deltaTime / SpeedLerp;
                 transform.position = Vector3.Lerp(transform.position, DesiredPosition, t);
                 _animator.SetFloat("SpeedPercent", LocomationAnimationSpeedPercent, LocomationAnimationSmoothTime, Time.deltaTime);
+            }
+
+            if (DesiredRotation != null)
+            {
+                var t = Time.deltaTime / SpeedLerp;
+                transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, DesiredRotation, t);
             }
         }
     }

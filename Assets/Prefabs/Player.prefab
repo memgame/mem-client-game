@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DesiredPosition: {x: 0, y: 0, z: 0}
+  DesiredRotation: {x: 0, y: 0, z: 0}
   SpeedLerp: 0.085
   LocomationAnimationSmoothTime: 0.125
   LocomationAnimationSpeedPercent: 0

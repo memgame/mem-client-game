@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Colyseus;
+using MemClientGame.Assets.Scripts.Controller;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -47,9 +48,8 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
         {
             string playerId = jsonObj["path"]["id"].ToString();
             float value = float.Parse(jsonObj["value"].ToString());
-            GameObject player = _gameManager.Players[playerId];
-            player.transform.eulerAngles = new Vector3(0, value, 0);
-
+            ControllerPlayer player = _gameManager.Players[playerId].GetComponent<ControllerPlayer>();
+            player.DesiredRotation.y = value;
             Debug.Log(jsonObj);
             Debug.Log("PlayerRotation replace");
         }
