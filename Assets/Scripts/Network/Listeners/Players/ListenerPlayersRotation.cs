@@ -40,6 +40,10 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
 
         private void OperationAdd(JToken jsonObj)
         {
+            string playerId = jsonObj["path"]["id"].ToString();
+            float value = float.Parse(jsonObj["value"].ToString());
+            ControllerPlayer player = _gameManager.Players[playerId].GetComponent<ControllerPlayer>();
+            player.DesiredRotation.y = value;
             Debug.Log(jsonObj);
             Debug.Log("PlayerRotation add");
         }
