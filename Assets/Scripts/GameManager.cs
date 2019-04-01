@@ -6,6 +6,7 @@ using MemClientGame.Assets.Scripts.Network;
 using System;
 //using MemClientGame.Assets.Scripts.Network.Listeners.Players;
 using Colyseus;
+using Colyseus.Schema;
 
 namespace MemClientGame.Assets.Scripts
 {
@@ -40,6 +41,10 @@ namespace MemClientGame.Assets.Scripts
             _colyseusClient = new ColyseusClient(serverip, serverport);
             await _colyseusClient.ConnectToServer();
             GameRoom = _colyseusClient.JoinRoom(roomname, token);
+            GameRoom.State.statePlayers.players.OnAdd += (object sender, KeyValueEventArgs<Player, string> e) =>
+            {
+                Debug.Log("player has been added at " + e.Key);
+            };
             //GameRoom.Listen(ListenerPlayers.LISTENER_PATH, new ListenerPlayers(this).OnChange);
             //GameRoom.Listen(ListenerPlayersPosition.LISTENER_PATH, new ListenerPlayersPosition(this).OnChange);
             //GameRoom.Listen(ListenerPlayersLocomationAnimationSpeedPercent.LISTENER_PATH, new ListenerPlayersLocomationAnimationSpeedPercent(this).OnChange);
