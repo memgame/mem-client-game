@@ -3,32 +3,59 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
-using GameDevWare.Serialization;
-using GameDevWare.Serialization.MessagePack;
-
 using UnityEngine;
+using GameDevWare.Serialization;
 
 namespace Colyseus
 {
-	public class RoomAvailable {
-        public string roomId { get; set; }
-        public uint clients { get; set; }
-        public uint maxClients { get; set; }
-        public object metadata { get; set; }
+	public class RoomAvailable
+	{
+		public string roomId { get; set; }
+		public uint clients { get; set; }
+		public uint maxClients { get; set; }
+		public object metadata { get; set; }
+	}
+
+	public interface IRoom 
+	{
+		string Id { get; set; }
+		Dictionary<string, object> Options { get; set; }
+
+		void Recv();
+		void SetConnection(Connection connection);
+
+		event EventHandler OnLeave;
 	}
 
 	/// <summary>
 	/// </summary>
-	public class Room : StateContainer
+
+	// public class Room<T> : IRoom
+	public class Room<T> : IRoom
 	{
-		public string id;
-		public string name;
-		public string sessionId;
+		protected string id;
+		public string Id
+		{
+			get { return id;  }
+			set { id = value; }
+		}
 
-		public Dictionary<string, object> options;
+		public string Name;
+		public string SessionId;
 
-		protected Connection connection;
-		protected byte[] _previousState = null;
+		protected Dictionary<string, object> options;
+		public Dictionary<string, object> Options
+		{
+			get { return options;  }
+			set { options = value; }
+		}
+
+		public Connection Connection;
+
+		public string SerializerId;
+		protected ISerializer<T> serializer;
+
+		protected byte previousCode = 0;
 
 		/// <summary>
 		/// Occurs when <see cref="Room"/> is able to connect to the server.
@@ -58,7 +85,8 @@ namespace Colyseus
 		/// <summary>
 		/// Occurs after applying the patched state on this <see cref="Room"/>.
 		/// </summary>
-		public event EventHandler<RoomUpdateEventArgs> OnStateChange;
+		//public event EventHandler<StateChangeEventArgs<T>> OnStateChange;
+		public event EventHandler<StateChangeEventArgs<T>> OnStateChange;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Room"/> class.
@@ -68,70 +96,76 @@ namespace Colyseus
 		/// The <see cref="Client"/> client connection instance.
 		/// </param>
 		/// <param name="name">The name of the room</param>
-		public Room (String name, Dictionary<string, object> options = null)
-			: base(new IndexedDictionary<string, object>())
+		public Room (string name, Dictionary<string, object> options = null)
 		{
-			this.name = name;
-			this.options = options;
+			Name = name;
+			Options = options;
 		}
 
 		public void Recv ()
 		{
-			byte[] data = this.connection.Recv();
+			byte[] data = Connection.Recv();
 			if (data != null)
 			{
-				this.ParseMessage(data);
+				ParseMessage(data);
 			}
 		}
 
-		public IEnumerator Connect ()
+		public IEnumerator Connect()
 		{
-			return this.connection.Connect ();
+			return Connection.Connect();
 		}
 
 		public void SetConnection (Connection connection)
 		{
-			this.connection = connection;
+			Connection = connection;
 
-			this.connection.OnClose += (object sender, EventArgs e) => {
-				if (this.OnLeave != null) {
-					this.OnLeave.Invoke (this, e);
+			Connection.OnClose += (object sender, EventArgs e) => {
+				if (OnLeave != null) {
+					OnLeave.Invoke (this, e);
 				}
 			};
 
-			this.connection.OnError += (object sender, ErrorEventArgs e) => {
-				if (this.OnError != null) {
-					this.OnError.Invoke(this, e);
+			Connection.OnError += (object sender, ErrorEventArgs e) => {
+				if (OnError != null) {
+					OnError.Invoke(this, e);
 				}
 			};
 
-			this.OnReadyToConnect.Invoke (this, new EventArgs());
+			OnReadyToConnect.Invoke (this, new EventArgs());
 		}
 
-		public void SetState( byte[] encodedState, uint remoteCurrentTime, uint remoteElapsedTime)
+		public void SetState(byte[] encodedState)
 		{
-			// Deserialize
-			var state = MsgPack.Deserialize<IndexedDictionary<string, object>> (new MemoryStream(encodedState));
+			serializer.SetState(encodedState);
 
-			this.Set(state);
-
-			if (this.OnStateChange != null) {
-				this.OnStateChange.Invoke (this, new RoomUpdateEventArgs (state, true));
+			if (OnStateChange != null) {
+				OnStateChange.Invoke (this, new StateChangeEventArgs<T>(serializer.GetState(), true));
 			}
+		}
 
-			this._previousState = encodedState;
+		public T State
+		{
+			get { return serializer.GetState(); }
 		}
 
 		/// <summary>
 		/// Leave the room.
 		/// </summary>
-		public void Leave ()
+		public void Leave (bool consented = true)
 		{
-			if (this.id != null) {
-				this.connection.Send(new object[]{Protocol.LEAVE_ROOM});
+			if (Id != null) {
+				if (consented)
+				{
+					Connection.Send(new object[] { Protocol.LEAVE_ROOM }); 
+				}
+				else
+				{
+					Connection.Close();
+				}
 
-			} else {
-				this.OnLeave.Invoke (this, new EventArgs ());
+			} else if (OnLeave != null) {
+				OnLeave.Invoke (this, new EventArgs ());
 			}
 		}
 
@@ -141,70 +175,108 @@ namespace Colyseus
 		/// <param name="data">Data to be sent</param>
 		public void Send (object data)
 		{
-			this.connection.Send(new object[]{Protocol.ROOM_DATA, this.id, data});
+			Connection.Send(new object[]{Protocol.ROOM_DATA, Id, data});
 		}
 
-		protected void ParseMessage (byte[] recv)
+		public Listener<Action<PatchObject>> Listen(Action<PatchObject> callback)
 		{
-			var message = MsgPack.Deserialize<List<object>> (new MemoryStream(recv));
-			var code = (byte) message [0];
+			if (string.IsNullOrEmpty(SerializerId))
+			{
+				throw new Exception("room.Listen() should be called after room.OnJoin");
+			}
+			return ((FossilDeltaSerializer)serializer).State.Listen(callback);
+		}
 
-			if (code == Protocol.JOIN_ROOM) {
-				this.sessionId = (string) message [1];
+		public Listener<Action<DataChange>> Listen(string segments, Action<DataChange> callback, bool immediate = false)
+		{
+			if (string.IsNullOrEmpty(SerializerId))
+			{
+				throw new Exception("room.Listen() should be called after room.OnJoin");
+			}
+			return ((FossilDeltaSerializer)serializer).State.Listen(segments, callback, immediate);
+		}
 
-				if (this.OnJoin != null) {
-					this.OnJoin.Invoke (this, new EventArgs ());
+		protected void ParseMessage (byte[] bytes)
+		{
+			if (previousCode == 0)
+			{
+				byte code = bytes[0];
+
+				if (code == Protocol.JOIN_ROOM)
+				{
+					var offset = 1;
+
+					SessionId = System.Text.Encoding.UTF8.GetString(bytes, offset+1, bytes[offset]);
+					offset += SessionId.Length + 1;
+
+					SerializerId = System.Text.Encoding.UTF8.GetString(bytes, offset+1, bytes[offset]);
+					offset += SerializerId.Length + 1;
+
+					if (SerializerId == "schema")
+					{
+						serializer = new SchemaSerializer<T>();
+
+					} else if (SerializerId == "fossil-delta")
+					{
+						serializer = (ISerializer<T>) new FossilDeltaSerializer();
+					}
+
+					// TODO: use serializer defined by the back-end.
+					// serializer = (Colyseus.Serializer) new FossilDeltaSerializer();
+
+					if (bytes.Length > offset)
+					{
+						serializer.Handshake(bytes, offset);
+					}
+
+					if (OnJoin != null)
+					{
+						OnJoin.Invoke(this, new EventArgs());
+					}
+
 				}
+				else if (code == Protocol.JOIN_ERROR)
+				{
+					var message = System.Text.Encoding.UTF8.GetString(bytes, 2, bytes[1]);
+					OnError.Invoke(this, new ErrorEventArgs(message));
 
-			} else if (code == Protocol.JOIN_ERROR) {
-				this.OnError.Invoke (this, new ErrorEventArgs ((string) message [1]));
-
-			} else if (code == Protocol.LEAVE_ROOM) {
-				this.Leave ();
-
-			} else if (code == Protocol.ROOM_STATE) {
-				byte[] encodedState = (byte[]) message [1];
-
-				// TODO:
-				// https://github.com/deniszykov/msgpack-unity3d/issues/8
-
-				// var remoteCurrentTime = (double) message [2];
-				// var remoteElapsedTime = (int) message [3];
-
-				// this.SetState (state, remoteCurrentTime, remoteElapsedTime);
-
-				this.SetState (encodedState, 0, 0);
-
-			} else if (code == Protocol.ROOM_STATE_PATCH) {
-
-				var data = (List<object>) message [1];
-				byte[] patches = new byte[data.Count];
-
-				uint i = 0;
-				foreach (var b in data) {
-					patches [i] = Convert.ToByte(b);
-					i++;
 				}
+				else if (code == Protocol.LEAVE_ROOM)
+				{
+					Leave();
 
-				this.Patch (patches);
-
-			} else if (code == Protocol.ROOM_DATA) {
-				if (this.OnMessage != null) {
-					this.OnMessage.Invoke (this, new MessageEventArgs (message [1]));
 				}
+				else 
+				{
+					previousCode = code;
+
+				}
+			} else
+			{
+				if (previousCode == Protocol.ROOM_STATE)
+				{
+					SetState(bytes);
+				}
+				else if (previousCode == Protocol.ROOM_STATE_PATCH)
+				{
+					Patch(bytes);
+				}
+				else if (previousCode == Protocol.ROOM_DATA)
+				{
+					var message = MsgPack.Deserialize<object>(new MemoryStream(bytes));
+					OnMessage.Invoke(this, new MessageEventArgs(message));
+
+				}
+				previousCode = 0;
 			}
 		}
 
 		protected void Patch (byte[] delta)
 		{
-			this._previousState = Fossil.Delta.Apply (this._previousState, delta);
+			serializer.Patch(delta);
 
-			var newState = MsgPack.Deserialize<IndexedDictionary<string, object>> (new MemoryStream(this._previousState));
-
-			this.Set(newState);
-
-			if (this.OnStateChange != null)
-				this.OnStateChange.Invoke(this, new RoomUpdateEventArgs(this.state));
+			if (OnStateChange != null)
+				OnStateChange.Invoke(this, new StateChangeEventArgs<T>(serializer.GetState()));
 		}
 	}
 }

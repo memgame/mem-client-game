@@ -48,7 +48,7 @@ namespace MemClientGame.Assets.Scripts.Network.Listeners.Players
             player.transform.eulerAngles = new Vector3(0, rotation, 0);
             _gameManager.Players.Add(playerId, player);
 
-            if (playerId == _gameManager.GameRoom.sessionId)
+            if (playerId == _gameManager.GameRoom.SessionId)
             {
                 _gameManager.CameraTarget = player.transform;
             }

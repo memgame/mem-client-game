@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MemClientGame.Assets.Scripts.Network;
 using System;
-using MemClientGame.Assets.Scripts.Network.Listeners.Players;
+//using MemClientGame.Assets.Scripts.Network.Listeners.Players;
 using Colyseus;
 
 namespace MemClientGame.Assets.Scripts
@@ -14,7 +14,7 @@ namespace MemClientGame.Assets.Scripts
         public Text ServerText; 
         public GameObject PrefabPlayer;
         public Transform CameraTarget;
-        public Room GameRoom;
+        public Room<StateRoot> GameRoom;
         public Dictionary<string, GameObject> Players = new Dictionary<string, GameObject>();
         private ColyseusClient _colyseusClient;
         // Start is called before the first frame update
@@ -40,10 +40,10 @@ namespace MemClientGame.Assets.Scripts
             _colyseusClient = new ColyseusClient(serverip, serverport);
             await _colyseusClient.ConnectToServer();
             GameRoom = _colyseusClient.JoinRoom(roomname, token);
-            GameRoom.Listen(ListenerPlayers.LISTENER_PATH, new ListenerPlayers(this).OnChange);
-            GameRoom.Listen(ListenerPlayersPosition.LISTENER_PATH, new ListenerPlayersPosition(this).OnChange);
-            GameRoom.Listen(ListenerPlayersLocomationAnimationSpeedPercent.LISTENER_PATH, new ListenerPlayersLocomationAnimationSpeedPercent(this).OnChange);
-            GameRoom.Listen(ListenerPlayersRotation.LISTENER_PATH, new ListenerPlayersRotation(this).OnChange);
+            //GameRoom.Listen(ListenerPlayers.LISTENER_PATH, new ListenerPlayers(this).OnChange);
+            //GameRoom.Listen(ListenerPlayersPosition.LISTENER_PATH, new ListenerPlayersPosition(this).OnChange);
+            //GameRoom.Listen(ListenerPlayersLocomationAnimationSpeedPercent.LISTENER_PATH, new ListenerPlayersLocomationAnimationSpeedPercent(this).OnChange);
+            //GameRoom.Listen(ListenerPlayersRotation.LISTENER_PATH, new ListenerPlayersRotation(this).OnChange);
         }
         private static string GetArg(string name)
         {

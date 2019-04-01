@@ -1,10 +1,8 @@
 using System;
 using System.Text.RegularExpressions;
-using System.Collections;
 using System.Collections.Generic;
 
 using GameDevWare.Serialization;
-using GameDevWare.Serialization.MessagePack;
 
 namespace Colyseus
 {
@@ -72,7 +70,7 @@ namespace Colyseus
 			return listener;
 		}
 
-		public PatchListener Listen(string segments, Action<DataChange> callback) {
+		public PatchListener Listen(string segments, Action<DataChange> callback, bool immediate = false) {
 			var rawRules = segments.Split ('/');
 			var regexpRules = this.ParseRegexRules (rawRules);
 
@@ -83,6 +81,12 @@ namespace Colyseus
 			};
 
 			this.listeners.Add(listener);
+
+			if (immediate) {
+				List<PatchListener> onlyListener = new List<PatchListener>();
+				onlyListener.Add(listener);
+				this.CheckPatches(Compare.GetPatchList(new IndexedDictionary<string, object>(), this.state), onlyListener);
+        	}
 
 			return listener;
 		}
@@ -128,23 +132,29 @@ namespace Colyseus
 			return regexpRules;
 		}
 
-		private void CheckPatches(PatchObject[] patches)
+		private void CheckPatches(PatchObject[] patches, List<PatchListener> _listeners = null)
 		{
+			if (_listeners == null) 
+			{
+				_listeners = this.listeners;
+			}
 
 			for (var i = patches.Length - 1; i >= 0; i--)
 			{
 				var matched = false;
 
-				for (var j = 0; j < this.listeners.Count; j++)
+				for (var j = 0; j < _listeners.Count; j++)
 				{
-					var listener = this.listeners[j];
+					var listener = _listeners[j];
 					var pathVariables = this.GetPathVariables(patches[i], listener);
 					if (pathVariables != null)
 					{
-						var dataChange = new DataChange ();
-						dataChange.path = pathVariables;
-						dataChange.operation = patches [i].operation;
-						dataChange.value = patches [i].value;
+						DataChange dataChange = new DataChange
+						{
+							path = pathVariables,
+							operation = patches[i].operation,
+							value = patches[i].value
+						};
 
 						listener.callback.Invoke (dataChange);
 						matched = true;

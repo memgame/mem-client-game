@@ -10,7 +10,7 @@ namespace MemClientGame.Assets.Scripts.Network
     {
         public bool IsConnectedToServer {get; private set; } = false;
         private Client _client;
-        private List<Room> _rooms;
+        private List<Room<StateRoot>> _rooms;
         private string _serverName;
         private string _port;
         private string _serverUri;
@@ -23,7 +23,7 @@ namespace MemClientGame.Assets.Scripts.Network
             _serverUri = "ws://" + this._serverName + ":" + this._port;
             _client = new Client(_serverUri);
             //_client.OnClose += (object sender, EventArgs e) => Debug.Log("ColyseusClient connection closed");
-            _rooms = new List<Room>();
+            _rooms = new List<Room<StateRoot>>();
         }
 
         public async Task<bool> ConnectToServer()
@@ -45,18 +45,18 @@ namespace MemClientGame.Assets.Scripts.Network
             }
         }
 
-        public Room JoinRoom(string roomName, string token)
+        public Room<StateRoot> JoinRoom(string roomName, string token)
         {
             var options = new Dictionary<string, object>();
             options.Add("token", token);
-            Room room = _client.Join(roomName, options);
-            Debug.Log("sessionid" + room.id);
+            Room<StateRoot> room = _client.Join<StateRoot>(roomName, options);
+            Debug.Log("sessionid" + room.Id);
             _rooms.Add(room);
 
             room.OnReadyToConnect += async (sender, e) =>
             {
                 await room.Connect();
-                Debug.Log($"ColyseusClient connected to {room.name} room successfully");
+                Debug.Log($"ColyseusClient connected to {room.Name} room successfully");
             };
 
             return room;
@@ -64,13 +64,13 @@ namespace MemClientGame.Assets.Scripts.Network
 
         public void CloseConnectionToServer()
         {
-            foreach(Room room in _rooms)
+            foreach(Room<StateRoot> room in _rooms)
             {
                 room.Leave();
-                Debug.Log($"ColyseusClient room: {room.id} left");
+                Debug.Log($"ColyseusClient room: {room.Id} left");
             }
             _client.Close();
-            Debug.Log($"ColyseusClient: {_client.id} closed");
+            Debug.Log($"ColyseusClient: {_client.Id} closed");
             IsConnectedToServer = false;
         }
 

@@ -13,13 +13,13 @@ namespace Colyseus
 		/// <summary>
 		/// The error message
 		/// </summary>
-		public string message = null;
+		public string Message;
 
 		/// <summary>
 		/// </summary>
 		public ErrorEventArgs (string message)
 		{
-			this.message = message;
+			Message = message;
 		}
 	}
 
@@ -31,37 +31,39 @@ namespace Colyseus
 		/// <summary>
 		/// Message coming from the server.
 		/// </summary>
-		public object message = null;
+		public object Message;
 
 		/// <summary>
 		/// </summary>
-		public MessageEventArgs (object message)
+		public MessageEventArgs (object _message)
 		{
-			this.message = message;
+			Message = _message;
 		}
 	}
 
 	/// <summary>
 	/// Room Update Message
 	/// </summary>
-	public class RoomUpdateEventArgs : EventArgs
+	public class StateChangeEventArgs<T> : EventArgs
 	{
 		/// <summary>
 		/// New state of the <see cref="Room" />
 		/// </summary>
-		public IndexedDictionary<string, object> state;
+		public T State { get; private set; }
+
+		//public IndexedDictionary<string, object> State { get; private set; }
+
+		/// <summary>	
+		/// Boolean representing if the event is setting the state of the <see cref="Room" /> for the first time.	
+		/// </summary>
+		public bool IsFirstState;
 
 		/// <summary>
-		/// Boolean representing if the event is setting the state of the <see cref="Room" /> for the first time.
 		/// </summary>
-		public bool isFirstState;
-
-		/// <summary>
-		/// </summary>
-		public RoomUpdateEventArgs (IndexedDictionary<string, object> state, bool isFirstState = false)
+		public StateChangeEventArgs (T state, bool isFirstState = false)
 		{
-			this.state = state;
-			this.isFirstState = isFirstState;
+			State = state;
+			IsFirstState = isFirstState;
 		}
 	}
 }
