@@ -52,13 +52,11 @@ namespace MemClientGame.Assets.Scripts.Network
             Room<StateRoot> room = _client.Join<StateRoot>(roomName, options);
             Debug.Log("sessionid" + room.Id);
             _rooms.Add(room);
-
             room.OnReadyToConnect += async (sender, e) =>
             {
                 await room.Connect();
                 Debug.Log($"ColyseusClient connected to {room.Name} room successfully");
             };
-
             return room;
         }
 
