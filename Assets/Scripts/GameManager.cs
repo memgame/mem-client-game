@@ -7,6 +7,7 @@ using System;
 //using MemClientGame.Assets.Scripts.Network.Listeners.Players;
 using Colyseus;
 using Colyseus.Schema;
+using MemClientGame.Assets.Scripts.Network.StateHandlers;
 
 namespace MemClientGame.Assets.Scripts
 {
@@ -52,11 +53,7 @@ namespace MemClientGame.Assets.Scripts
         }
 
         private void initStateHandler() {
-            GameRoom.State.statePlayers.players.OnAdd += (object sender, KeyValueEventArgs<Player, string> e) =>
-            {
-                Debug.Log("player has been added at " + e.Key);
-                Debug.Log(e.Value.name);
-            }; 
+            var stateHandlePlayers = new StatePlayersHandler(GameRoom.State.statePlayers, this);
         }
         private static string GetArg(string name)
         {
