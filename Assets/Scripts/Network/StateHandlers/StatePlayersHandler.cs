@@ -1,4 +1,5 @@
 using Colyseus.Schema;
+using MemClientGame.Assets.Scripts.Controller;
 using UnityEngine;
 
 namespace MemClientGame.Assets.Scripts.Network.StateHandlers
@@ -12,42 +13,75 @@ namespace MemClientGame.Assets.Scripts.Network.StateHandlers
             _statePlayers = statePlayers;
             _gameManager = gameManager;
             _statePlayers.players.OnAdd += OnAddPlayer;
+            _statePlayers.players.OnRemove += OnRemovePlayer;
+            _statePlayers.players.OnChange += OnChangePlayer;
         }
 
         private void OnAddPlayer(object sender, KeyValueEventArgs<Player, string> e)
         {
-            string playerId = e.Value.id;
-            string name = e.Value.name;
-            float moveSpeed = e.Value.moveSpeed;
-            float rotation = e.Value.rotation;
-            float positionX = 0f;
-            float positionY = 0f;
-            float positionZ = 0f;
+            GameObject player = Object.Instantiate(
+                _gameManager.PrefabPlayer,
+                new Vector3(e.Value.position.x, e.Value.position.y, e.Value.position.z),
+                new Quaternion());
 
+            ControllerPlayer playerController = player.GetComponent<ControllerPlayer>();
 
-            GameObject player = Object.Instantiate(_gameManager.PrefabPlayer, new Vector3(positionX, positionY, positionZ), new Quaternion());
-            player.transform.eulerAngles = new Vector3(0, rotation, 0);
-            _gameManager.Players.Add(playerId, player);
+            //player.transform.eulerAngles = new Vector3(0, e.Value.rotation, 0);
+            playerController.DesiredRotation.y = e.Value.rotation;
+            playerController.LocomationAnimationSpeedPercent = e.Value.locomationAnimationSpeedPercent;
+            _gameManager.Players.Add(e.Value.id, player);
 
-            if (playerId == _gameManager.GameRoom.SessionId)
+            if (e.Value.id == _gameManager.GameRoom.SessionId)
             {
                 _gameManager.CameraTarget = player.transform;
             }
             Debug.Log("Player add");
+
+            e.Value.OnChange += (object sender2, OnChangeEventArgs e2) =>
+            {
+                e2.Changes.ForEach((Colyseus.Schema.DataChange obj) =>
+                {
+                    Debug.Log(obj.Field);
+                    switch(obj.Field)
+                    {
+                        case "position":
+                        {
+                            Position position = obj.Value as Position;
+                            playerController.DesiredPosition.x = position.x;
+                            playerController.DesiredPosition.z = position.z;
+                            
+                            Debug.Log("position changed");
+                            Debug.Log(position.x + " " + position.z);
+                            break;
+                        }
+                        case "rotation":
+                        {
+                            playerController.DesiredRotation.y = float.Parse(obj.Value.ToString());
+                            break;
+                        }
+                        case "locomationAnimationSpeedPercent":
+                        {
+                            playerController.LocomationAnimationSpeedPercent = float.Parse(obj.Value.ToString());
+                            break;
+                        }
+                            
+                    }
+                });
+            };
         }
 
         private void OnRemovePlayer(object sender, KeyValueEventArgs<Player, string> e)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        private void OnChangePlayer(object sender, KeyValueEventArgs<Player, string> e)
         {
             string playerId = e.Key;
             GameObject player = _gameManager.Players[playerId];
             Object.Destroy(player);
             _gameManager.Players.Remove(playerId);
             Debug.Log("Player remove");
+        }
+
+        private void OnChangePlayer(object sender, KeyValueEventArgs<Player, string> e)
+        {
+
         }
     }
 }
