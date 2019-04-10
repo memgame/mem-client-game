@@ -77,7 +77,7 @@ namespace MemClientGame.Assets.Scripts.Network
             while (IsConnectedToServer)
             {
                 _client.Recv();
-                await Task.Delay(TimeSpan.FromMilliseconds(20));
+                await Task.Delay(TimeSpan.FromMilliseconds(10));
             }
         }
 
