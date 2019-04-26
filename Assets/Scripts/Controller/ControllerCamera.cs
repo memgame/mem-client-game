@@ -9,6 +9,10 @@ namespace MemClientGame.Assets.Scripts.Controller
         public float SpeedCamera;
         public float BorderThickness = 10f;
         public bool IsFocusingPlayer = false;
+        public Terrain CameraLimit;
+        public float ScrollSpeed = 20f;
+        public float MinCameraDistance = 3f;
+        public float MaxCameraDistance = 120f;
         public void Start()
         {
 
@@ -85,6 +89,14 @@ namespace MemClientGame.Assets.Scripts.Controller
                     var t = Time.deltaTime / SpeedCamera;
                     pos.x -= t;
                 }
+
+                float scroll = Input.GetAxis("Mouse ScrollWheel");
+                pos.y += -scroll * ScrollSpeed * 100f * Time.deltaTime;
+
+                pos.x = Mathf.Clamp(pos.x, CameraLimit.transform.position.x, CameraLimit.terrainData.size.x);
+                pos.y = Mathf.Clamp(pos.y, MinCameraDistance, MaxCameraDistance);
+                pos.z = Mathf.Clamp(pos.z, CameraLimit.transform.position.z, CameraLimit.terrainData.size.z);
+
                 transform.position = pos;
             }
         }

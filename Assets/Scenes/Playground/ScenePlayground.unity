@@ -181,6 +181,11 @@ PrefabInstance:
       propertyPath: GameManager
       value: 
       objectReference: {fileID: 1972685715}
+    - target: {fileID: 7164964372476656414, guid: 5b3c7e6fdd26b5347a8a10af32dfc3b2,
+        type: 3}
+      propertyPath: CameraLimit
+      value: 
+      objectReference: {fileID: 385215519}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5b3c7e6fdd26b5347a8a10af32dfc3b2, type: 3}
 --- !u!1001 &381261125

@@ -159,6 +159,12 @@ MonoBehaviour:
   GameManager: {fileID: 0}
   OffsetCamera: {x: 0, y: 10, z: -5}
   SpeedCamera: 0.05
+  BorderThickness: 10
+  IsFocusingPlayer: 1
+  CameraLimit: {fileID: 0}
+  ScrollSpeed: 20
+  MinCameraDistance: 3
+  MaxCameraDistance: 120
 --- !u!114 &6714305928430291608
 MonoBehaviour:
   m_ObjectHideFlags: 0
