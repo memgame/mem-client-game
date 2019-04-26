@@ -7,6 +7,8 @@ namespace MemClientGame.Assets.Scripts.Controller
         public GameManager GameManager;
         public Vector3 OffsetCamera;
         public float SpeedCamera;
+        public float BorderThickness = 10f;
+        public bool IsFocusingPlayer = false;
         public void Start()
         {
 
@@ -15,12 +17,18 @@ namespace MemClientGame.Assets.Scripts.Controller
         public void Update()
         {
             // Exit Game  
-            if (Input.GetKey(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Application.Quit();
                 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
                 #endif
+            }
+
+            // Change Camera Type
+            if (Input.GetKeyDown(KeyCode.Z))
+            {
+                IsFocusingPlayer = !IsFocusingPlayer;
             }
 
             if(Input.GetMouseButtonDown(1) && GameManager.GameRoom != null)
@@ -45,13 +53,39 @@ namespace MemClientGame.Assets.Scripts.Controller
 
         public void LateUpdate()
         {
-            if (GameManager.CameraTarget != null)
+            if (IsFocusingPlayer)
             {
-                var desiredPosition = GameManager.CameraTarget.position + OffsetCamera;
-                var t = Time.deltaTime / SpeedCamera;
-                transform.position = Vector3.Lerp(transform.position, desiredPosition, t);
+                if (GameManager.CameraTarget != null)
+                {
+                    var desiredPosition = GameManager.CameraTarget.position + OffsetCamera;
+                    var t = Time.deltaTime / SpeedCamera;
+                    transform.position = Vector3.Lerp(transform.position, desiredPosition, t);
 
-                //transform.LookAt(GameManager.CameraTarget);
+                    //transform.LookAt(GameManager.CameraTarget);
+                }
+            } else {
+                Vector3 pos = transform.position;
+                if (Input.mousePosition.y >= Screen.height - BorderThickness)
+                {
+                    var t = Time.deltaTime / SpeedCamera;
+                    pos.z += t;
+                }
+                if (Input.mousePosition.y <= BorderThickness)
+                {
+                    var t = Time.deltaTime / SpeedCamera;
+                    pos.z -= t;
+                }
+                if (Input.mousePosition.x >= Screen.width - BorderThickness)
+                {
+                    var t = Time.deltaTime / SpeedCamera;
+                    pos.x += t;
+                }
+                if (Input.mousePosition.x <= BorderThickness)
+                {
+                    var t = Time.deltaTime / SpeedCamera;
+                    pos.x -= t;
+                }
+                transform.position = pos;
             }
         }
     }
