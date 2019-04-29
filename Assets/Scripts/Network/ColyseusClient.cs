@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Mem.Models;
 
 namespace MemClientGame.Assets.Scripts.Network
 {

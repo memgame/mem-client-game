@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -27,15 +28,38 @@ using System.Reflection;
 
 namespace Colyseus.Schema
 {
-  [AttributeUsage(AttributeTargets.Field)]
+  class Context 
+  {
+    protected static Context instance = new Context();
+    protected List<System.Type> types = new List<System.Type>();
+    protected Dictionary<uint, System.Type> typeIds = new Dictionary<uint, System.Type>();
+
+    public static Context GetInstance()
+    {
+      return instance;
+    }
+
+    public void SetTypeId(System.Type type, uint typeid)
+    {
+      typeIds[typeid] = type;
+    }
+
+    public System.Type Get(uint typeid)
+    {
+      return typeIds[typeid];
+    }
+  }
+
+  [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
   public class Type : Attribute
   {
-
+    public int Index;
     public string FieldType;
     public System.Type ChildType;
 
-    public Type(string type, System.Type childType = null)
+    public Type(int index, string type, System.Type childType = null)
     {
+      Index = index; // GetType().GetFields() doesn't guarantee order of fields, need to manually track them here!
       FieldType = type;
       ChildType = childType;
     }
@@ -50,6 +74,7 @@ namespace Colyseus.Schema
     END_OF_STRUCTURE = 0xc1, // (msgpack spec: never used)
     NIL = 0xc0,
     INDEX_CHANGE = 0xd4,
+    TYPE_ID = 0xd5
   }
 
   public class DataChange
@@ -85,10 +110,12 @@ namespace Colyseus.Schema
     void InvokeOnAdd(object item, object index);
     void InvokeOnChange(object item, object index);
     void InvokeOnRemove(object item, object index);
-
-    object CreateItemInstance();
+    
     object GetItems();
     void SetItems(object items);
+    void TriggerAll();
+
+    System.Type GetChildType();
 
     bool HasSchemaChild { get; }
     int Count { get; }
@@ -125,9 +152,9 @@ namespace Colyseus.Schema
       return clone;
     }
 
-    public object CreateItemInstance()
+    public System.Type GetChildType()
     {
-      return (T) Activator.CreateInstance(typeof(T));
+      return typeof(T);
     }
 
     public bool HasSchemaChild
@@ -167,6 +194,14 @@ namespace Colyseus.Schema
       Items = (List<T>) items;
     }
 
+    public void TriggerAll()
+    {
+      if (OnAdd == null) { return; }
+      for (var i = 0; i < Items.Count; i++) {
+        OnAdd.Invoke(this, new KeyValueEventArgs<T, int>((T) Items[i], (int) i));
+      }
+    }
+
     public void InvokeOnAdd(object item, object index)
     {
       if (OnAdd != null) { OnAdd.Invoke(this, new KeyValueEventArgs<T, int>((T) item, (int) index)); }
@@ -185,19 +220,19 @@ namespace Colyseus.Schema
 
   public class MapSchema<T> : ISchemaCollection
   {
-    public Dictionary<string, T> Items;
+    public OrderedDictionary Items = new OrderedDictionary();
     public event EventHandler<KeyValueEventArgs<T, string>> OnAdd;
     public event EventHandler<KeyValueEventArgs<T, string>> OnChange;
     public event EventHandler<KeyValueEventArgs<T, string>> OnRemove;
 
     public MapSchema()
     {
-      Items = new Dictionary<string, T>();
+      Items = new OrderedDictionary();
     }
 
-    public MapSchema(Dictionary<string, T> items = null)
+    public MapSchema(OrderedDictionary items = null)
     {
-      Items = items ?? new Dictionary<string, T>();
+      Items = items ?? new OrderedDictionary();
     }
 
     public ISchemaCollection Clone()
@@ -211,9 +246,9 @@ namespace Colyseus.Schema
       return clone;
     }
 
-    public object CreateItemInstance()
+    public System.Type GetChildType()
     {
-      return (T) Activator.CreateInstance(typeof(T));
+      return typeof(T);
     }
 
     public bool HasSchemaChild
@@ -225,7 +260,7 @@ namespace Colyseus.Schema
     {
       get {
         T value;
-        Items.TryGetValue(key, out value);
+        TryGetValue(key, out value);
         return value;
       }
       set { Items[key] = value; }
@@ -235,15 +270,10 @@ namespace Colyseus.Schema
     {
       get {
         T value;
-        Items.TryGetValue(key as string, out value);
+        TryGetValue(key as string, out value);
         return value;
       }
       set { Items[(string) key] = (T) value; }
-    }
-
-    public int Count
-    {
-      get { return Items.Count; }
     }
 
     public object GetItems()
@@ -251,9 +281,92 @@ namespace Colyseus.Schema
       return Items;
     }
 
+    public void Add(KeyValuePair<string, T> item)
+    {
+      Items[item.Key] = item.Value;
+    }
+
+    public void Clear()
+    {
+      Items.Clear();
+    }
+
+    public bool Contains(KeyValuePair<string, T> item)
+    {
+      return Items.Contains(item.Key);
+    }
+
+    public bool Remove(KeyValuePair<string, T> item)
+    {
+      T value;
+      if (TryGetValue(item.Key, out value) && Equals(value, item.Value))
+      {
+        Remove(item.Key);
+        return true;
+      }
+      return false;
+    }
+
+    public int Count
+    {
+      get { return Items.Count; }
+    }
+
+    public bool ContainsKey(string key)
+    {
+      return Items.Contains(key);
+    }
+
+    public void Add(string key, T value)
+    {
+      Items.Add(key, value);
+    }
+
+    public bool Remove(string key)
+    {
+      var result = Items.Contains(key);
+      if (result)
+      {
+        Items.Remove(key);
+      }
+      return result;
+    }
+
+    public bool TryGetValue(string key, out T value)
+    {
+      object foundValue;
+      if ((foundValue = Items[key]) != null || Items.Contains(key))
+      {
+        // Either found with a non-null value, or contained value is null.
+        value = (T)foundValue;
+        return true;
+      }
+      value = default(T);
+      return false;
+    }
+
+    public ICollection Keys
+    {
+      get { return Items.Keys; }
+    }
+
+    public ICollection Values
+    {
+      get { return Items.Values; }
+    }
+
     public void SetItems(object items)
     {
       throw new NotImplementedException();
+    }
+
+    public void TriggerAll()
+    {
+      if (OnAdd == null) { return; }
+      foreach(KeyValuePair<string, T> entry in Items)
+      {
+        OnAdd.Invoke(this, new KeyValueEventArgs<T, string>(entry.Value, entry.Key));
+      }
     }
 
     public void InvokeOnAdd(object item, object index)
@@ -283,22 +396,20 @@ namespace Colyseus.Schema
 
     public Schema()
     {
-      int index = 0;
-
       FieldInfo[] fields = GetType().GetFields();
       foreach (FieldInfo field in fields)
       {
         object[] typeAttributes = field.GetCustomAttributes(typeof(Type), true);
-		for (var i=0; i<typeAttributes.Length; i++)
-		{
-			Type t = (Type)typeAttributes[i];
-			fieldsByIndex.Add(index++, field.Name);
-			fieldTypes.Add(field.Name, t.FieldType);
-			if (t.FieldType == "ref" || t.FieldType == "array" || t.FieldType == "map")
-			{
-				fieldChildTypes.Add(field.Name, t.ChildType);
-			}
-		}
+        for (var i=0; i<typeAttributes.Length; i++)
+        {
+          Type t = (Type)typeAttributes[i];
+          fieldsByIndex.Add(t.Index, field.Name);
+          fieldTypes.Add(field.Name, t.FieldType);
+          if (t.FieldType == "ref" || t.FieldType == "array" || t.FieldType == "map")
+          {
+            fieldChildTypes.Add(field.Name, t.ChildType);
+          }
+        }
       }
     }
 
@@ -322,6 +433,12 @@ namespace Colyseus.Schema
 
       var changes = new List<DataChange>();
       var totalBytes = bytes.Length;
+
+      // skip TYPE_ID of existing instances
+      if (bytes[it.Offset] == (byte) SPEC.TYPE_ID)
+      {
+        it.Offset += 2;
+      }
 
       while (it.Offset < totalBytes)
       {
@@ -352,7 +469,7 @@ namespace Colyseus.Schema
           }
           else
           {
-            value = this[field] ?? Activator.CreateInstance(childType);
+            value = this[field] ?? CreateTypeInstance(bytes, it, childType);
             (value as Schema).Decode(bytes, it);
           }
 
@@ -368,7 +485,7 @@ namespace Colyseus.Schema
           ISchemaCollection currentValue = valueRef.Clone();
 
           int newLength = Convert.ToInt32(decode.DecodeNumber(bytes, it));
-          int numChanges = Convert.ToInt32(decode.DecodeNumber(bytes, it));
+          int numChanges = Math.Min(Convert.ToInt32(decode.DecodeNumber(bytes, it)), newLength);
 
           hasChange = (numChanges > 0);
 
@@ -412,7 +529,7 @@ namespace Colyseus.Schema
 
               if (isNew)
               {
-                item = (Schema)currentValue.CreateItemInstance();
+                item = (Schema)CreateTypeInstance(bytes, it, currentValue.GetChildType());
 
               }
               else if (indexChangedFrom != -1)
@@ -426,7 +543,7 @@ namespace Colyseus.Schema
 
               if (item == null)
               {
-                item = (Schema)currentValue.CreateItemInstance();
+                item = (Schema)CreateTypeInstance(bytes, it, currentValue.GetChildType());
                 isNew = true;
               }
 
@@ -471,7 +588,7 @@ namespace Colyseus.Schema
 
           bool hasIndexChange = false;
 
-          IDictionary items = currentValue.GetItems() as IDictionary;
+          OrderedDictionary items = currentValue.GetItems() as OrderedDictionary;
           string[] mapKeys = new string[items.Keys.Count];
           items.Keys.CopyTo(mapKeys, 0);
 
@@ -504,7 +621,7 @@ namespace Colyseus.Schema
 
             if (isNew && isSchemaType)
             {
-              item = (Schema)currentValue.CreateItemInstance();
+              item = (Schema)CreateTypeInstance(bytes, it, currentValue.GetChildType());
 
             } else if (previousKey != null)
             {
@@ -576,5 +693,73 @@ namespace Colyseus.Schema
         OnChange.Invoke(this, new OnChangeEventArgs(changes));
       }
     }
+
+    public void TriggerAll()
+    {
+      if (OnChange == null) { return; }
+
+      var changes = new List<DataChange>();
+      foreach(KeyValuePair<int, string> entry in fieldsByIndex)
+      {
+        var field = entry.Value;
+        if (this[field] != null)
+        {
+          changes.Add(new DataChange
+          {
+            Field = field,
+            Value = this[field],
+            PreviousValue = null
+          });
+        }
+      }
+
+      OnChange.Invoke(this, new OnChangeEventArgs(changes));
+    }
+
+    protected object CreateTypeInstance(byte[] bytes, Iterator it, System.Type type)
+    {
+      if (bytes[it.Offset] == (byte) SPEC.TYPE_ID)
+      {
+        it.Offset++;
+        uint typeId = Decoder.GetInstance().DecodeUint8(bytes, it);
+        System.Type anotherType = Context.GetInstance().Get(typeId);
+        return Activator.CreateInstance(anotherType);
+      } 
+      else 
+      {
+        return Activator.CreateInstance(type);
+      }
+    }
   }
+
+  public class ReflectionField : Schema
+  {
+    [Type(0, "string")]
+    public string name;
+
+    [Type(1, "string")]
+    public string type;
+
+    [Type(2, "uint8")]
+    public uint referencedType;
+  }
+
+  public class ReflectionType : Schema
+  {
+    [Type(0, "uint8")]
+    public uint id;
+
+    [Type(1, "array", typeof(ArraySchema<ReflectionField>))]
+    public ArraySchema<ReflectionField> fields = new ArraySchema<ReflectionField>();
+  }
+
+  public class Reflection : Schema
+  {
+    [Type(0, "array", typeof(ArraySchema<ReflectionType>))]
+    public ArraySchema<ReflectionType> types = new ArraySchema<ReflectionType>();
+
+    [Type(1, "uint8")]
+    public uint rootType;
+  }
+
 }

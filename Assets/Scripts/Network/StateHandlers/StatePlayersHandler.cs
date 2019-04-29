@@ -1,6 +1,7 @@
 using Colyseus.Schema;
 using MemClientGame.Assets.Scripts.Controller;
 using UnityEngine;
+using Mem.Models;
 
 namespace MemClientGame.Assets.Scripts.Network.StateHandlers
 {

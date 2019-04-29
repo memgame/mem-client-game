@@ -7,6 +7,7 @@ using System;
 //using MemClientGame.Assets.Scripts.Network.Listeners.Players;
 using Colyseus;
 using Colyseus.Schema;
+using Mem.Models;
 using MemClientGame.Assets.Scripts.Network.StateHandlers;
 
 namespace MemClientGame.Assets.Scripts
