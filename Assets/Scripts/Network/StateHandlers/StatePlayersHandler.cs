@@ -27,6 +27,7 @@ namespace MemClientGame.Assets.Scripts.Network.StateHandlers
 
             ControllerPlayer playerController = player.GetComponent<ControllerPlayer>();
 
+            playerController.PlayerId = e.Value.id;
             //player.transform.eulerAngles = new Vector3(0, e.Value.rotation, 0);
             playerController.DesiredRotation.y = e.Value.rotation;
             playerController.LocomationAnimationSpeedPercent = e.Value.locomationAnimationSpeedPercent;

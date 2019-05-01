@@ -9,6 +9,7 @@ using Colyseus;
 using Colyseus.Schema;
 using Mem.Models;
 using MemClientGame.Assets.Scripts.Network.StateHandlers;
+using Newtonsoft.Json;
 
 namespace MemClientGame.Assets.Scripts
 {
@@ -43,6 +44,10 @@ namespace MemClientGame.Assets.Scripts
             _colyseusClient = new ColyseusClient(serverip, serverport);
             await _colyseusClient.ConnectToServer();
             GameRoom = _colyseusClient.JoinRoom(roomname, token);
+            GameRoom.OnMessage += (object sender, MessageEventArgs e) => {
+                Debug.Log ("server just sent this message:");
+                Debug.Log(JsonConvert.SerializeObject(e.Message));
+            };
             GameRoom.OnJoin += (object sender, EventArgs e) => {
                 Debug.Log ("client joined successfully");
                 initStateHandler();

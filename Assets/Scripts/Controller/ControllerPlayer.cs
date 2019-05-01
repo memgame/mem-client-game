@@ -9,6 +9,7 @@ namespace MemClientGame.Assets.Scripts.Controller
         public float SpeedLerp;
         public float LocomationAnimationSmoothTime = .1f;
         public float LocomationAnimationSpeedPercent = 0;
+        public string PlayerId = null;
 
         private Animator _animator;
 
