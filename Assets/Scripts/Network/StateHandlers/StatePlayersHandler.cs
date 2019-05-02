@@ -28,6 +28,8 @@ namespace MemClientGame.Assets.Scripts.Network.StateHandlers
             ControllerPlayer playerController = player.GetComponent<ControllerPlayer>();
 
             playerController.PlayerId = e.Value.id;
+            playerController.Health = e.Value.health;
+            playerController.HealthMax = e.Value.healthMax;
             //player.transform.eulerAngles = new Vector3(0, e.Value.rotation, 0);
             playerController.DesiredRotation.y = e.Value.rotation;
             playerController.LocomationAnimationSpeedPercent = e.Value.locomationAnimationSpeedPercent;
@@ -64,6 +66,16 @@ namespace MemClientGame.Assets.Scripts.Network.StateHandlers
                         case "locomationAnimationSpeedPercent":
                         {
                             playerController.LocomationAnimationSpeedPercent = float.Parse(obj.Value.ToString());
+                            break;
+                        }
+                        case "health":
+                        {
+                            playerController.Health = float.Parse(obj.Value.ToString());
+                            break;
+                        }
+                        case "healthMax":
+                        {
+                            playerController.HealthMax = float.Parse(obj.Value.ToString());
                             break;
                         }
                             

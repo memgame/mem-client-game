@@ -9,7 +9,10 @@ namespace MemClientGame.Assets.Scripts.Controller
         public float SpeedLerp;
         public float LocomationAnimationSmoothTime = .1f;
         public float LocomationAnimationSpeedPercent = 0;
+        public float Health;
+        public float HealthMax;
         public string PlayerId = null;
+        private ControllerHealthbar _controllerHealthbar;
 
         private Animator _animator;
 
@@ -17,6 +20,7 @@ namespace MemClientGame.Assets.Scripts.Controller
         {
             DesiredPosition = transform.position;
             _animator = GetComponentInChildren<Animator>();
+            _controllerHealthbar = GetComponentInChildren<ControllerHealthbar>();
         }
 
         public void Update()
@@ -34,6 +38,11 @@ namespace MemClientGame.Assets.Scripts.Controller
                 
                 float angle = Mathf.LerpAngle(transform.eulerAngles.y, DesiredRotation.y, t);
                 transform.eulerAngles = new Vector3(0, angle, 0);
+            }
+            
+            if (_controllerHealthbar != null)
+            {
+                _controllerHealthbar.HealthPercent = Mathf.Clamp01(Health / HealthMax);
             }
         }
     }
