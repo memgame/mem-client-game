@@ -43,10 +43,9 @@ namespace MemClientGame.Assets.Scripts.Controller
                 if (Physics.Raycast(ray, out hitInfo, Mathf.Infinity))
                 {
                     if (IsRaycastHitOnPlayer(hitInfo)) return;
-                    if (IsRaycastHitOnWalkable(hitInfo)) return;
-
-                    Cursor.SetCursor(DefaultCursor, CursorHotspot, CursorMode.Auto);
+                    MoveToRaycastHit(hitInfo);
                 }
+                Cursor.SetCursor(DefaultCursor, CursorHotspot, CursorMode.Auto);
             }
         }
 
@@ -77,9 +76,8 @@ namespace MemClientGame.Assets.Scripts.Controller
             return false;
         }
 
-        private bool IsRaycastHitOnWalkable (RaycastHit hitInfo)
+        private void MoveToRaycastHit (RaycastHit hitInfo)
         {
-
             if(Input.GetMouseButtonDown(1) && _gameManager.GameRoom != null)
             {
                 Debug.Log(hitInfo.point);
@@ -104,7 +102,6 @@ namespace MemClientGame.Assets.Scripts.Controller
                     Destroy(_lastMoveToIndicator, 1);
                 }
             }
-            return false;
         }
     }
 }
