@@ -5,17 +5,21 @@ using UnityEngine.UI;
 
 namespace MemClientGame.Assets.Scripts.Controller
 {
-    public class ControllerHealthbar : MonoBehaviour
+    public class ControllerTag : MonoBehaviour
     {
-        public float HealthPercent = 1;
         public float SpeedLerp = .9f;
-        
+        public float HealthPercent = 1;
+
+        public float EnergyPercent = 1;
         [SerializeField]
-        private Image healthbarFill;
+        private Image _healthbarFill;
+        [SerializeField]
+        private Image _energybarFill;
 
         void Update ()
         {
-            healthbarFill.fillAmount = Mathf.Lerp(HealthPercent, healthbarFill.fillAmount, SpeedLerp);
+            _healthbarFill.fillAmount = Mathf.Lerp(HealthPercent, _healthbarFill.fillAmount, SpeedLerp);
+            _energybarFill.fillAmount = Mathf.Lerp(EnergyPercent, _energybarFill.fillAmount, SpeedLerp);
         }
         void LateUpdate ()
         {

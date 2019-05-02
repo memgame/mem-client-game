@@ -30,6 +30,8 @@ namespace MemClientGame.Assets.Scripts.Network.StateHandlers
             playerController.PlayerId = e.Value.id;
             playerController.Health = e.Value.health;
             playerController.HealthMax = e.Value.healthMax;
+            playerController.Energy = e.Value.energy;
+            playerController.EnergyMax = e.Value.energyMax;
             //player.transform.eulerAngles = new Vector3(0, e.Value.rotation, 0);
             playerController.DesiredRotation.y = e.Value.rotation;
             playerController.LocomationAnimationSpeedPercent = e.Value.locomationAnimationSpeedPercent;
@@ -76,6 +78,16 @@ namespace MemClientGame.Assets.Scripts.Network.StateHandlers
                         case "healthMax":
                         {
                             playerController.HealthMax = float.Parse(obj.Value.ToString());
+                            break;
+                        }
+                        case "energy":
+                        {
+                            playerController.Energy = float.Parse(obj.Value.ToString());
+                            break;
+                        }
+                        case "energyMax":
+                        {
+                            playerController.EnergyMax = float.Parse(obj.Value.ToString());
                             break;
                         }
                             

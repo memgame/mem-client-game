@@ -43,39 +43,42 @@ namespace Mem.Models {
 		public float energy = 0;
 
 		[Type(11, "number")]
-		public float attackRange = 0;
+		public float energyMax = 0;
 
 		[Type(12, "number")]
-		public float attackDamage = 0;
+		public float attackRange = 0;
 
 		[Type(13, "number")]
-		public float attackSpeed = 0;
+		public float attackDamage = 0;
 
 		[Type(14, "number")]
-		public float attackSpeedPercent = 0;
+		public float attackSpeed = 0;
 
 		[Type(15, "number")]
-		public float critChancePercent = 0;
+		public float attackSpeedPercent = 0;
 
 		[Type(16, "number")]
-		public float critBonusPercent = 0;
+		public float critChancePercent = 0;
 
 		[Type(17, "number")]
-		public float abilityPower = 0;
+		public float critBonusPercent = 0;
 
 		[Type(18, "number")]
-		public float cooldownReductionPercent = 0;
+		public float abilityPower = 0;
 
 		[Type(19, "number")]
-		public float armor = 0;
+		public float cooldownReductionPercent = 0;
 
 		[Type(20, "number")]
-		public float magicResistance = 0;
+		public float armor = 0;
 
 		[Type(21, "number")]
-		public float lifestealPercent = 0;
+		public float magicResistance = 0;
 
 		[Type(22, "number")]
+		public float lifestealPercent = 0;
+
+		[Type(23, "number")]
 		public float spellvampPercent = 0;
 	}
 }

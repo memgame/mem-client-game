@@ -30,7 +30,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2039212599252993085}
-  - {fileID: 8887582273808009214}
+  - {fileID: 2687054598497561123}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -53,6 +53,8 @@ MonoBehaviour:
   LocomationAnimationSpeedPercent: 0
   Health: 0
   HealthMax: 0
+  Energy: 0
+  EnergyMax: 0
   PlayerId: 
 --- !u!65 &-2584566175234616659
 BoxCollider:
@@ -114,7 +116,7 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2039212599253367485}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &7676592343017733344
+--- !u!1001 &3789182080322785597
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -124,7 +126,7 @@ PrefabInstance:
     - target: {fileID: 1403847344518749019, guid: be11ec8b83ecc24438eda8d5b55a5b1c,
         type: 3}
       propertyPath: m_Name
-      value: Healthbar
+      value: Tag
       objectReference: {fileID: 0}
     - target: {fileID: 1287946948945165086, guid: be11ec8b83ecc24438eda8d5b55a5b1c,
         type: 3}
@@ -189,7 +191,7 @@ PrefabInstance:
     - target: {fileID: 1287946948945165086, guid: be11ec8b83ecc24438eda8d5b55a5b1c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 2.4
+      value: 2.3
       objectReference: {fileID: 0}
     - target: {fileID: 1287946948945165086, guid: be11ec8b83ecc24438eda8d5b55a5b1c,
         type: 3}
@@ -233,9 +235,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be11ec8b83ecc24438eda8d5b55a5b1c, type: 3}
---- !u!224 &8887582273808009214 stripped
+--- !u!224 &2687054598497561123 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1287946948945165086, guid: be11ec8b83ecc24438eda8d5b55a5b1c,
     type: 3}
-  m_PrefabInstance: {fileID: 7676592343017733344}
+  m_PrefabInstance: {fileID: 3789182080322785597}
   m_PrefabAsset: {fileID: 0}

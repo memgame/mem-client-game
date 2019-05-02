@@ -11,8 +11,10 @@ namespace MemClientGame.Assets.Scripts.Controller
         public float LocomationAnimationSpeedPercent = 0;
         public float Health;
         public float HealthMax;
+        public float Energy;
+        public float EnergyMax;
         public string PlayerId = null;
-        private ControllerHealthbar _controllerHealthbar;
+        private ControllerTag _controllerTag;
 
         private Animator _animator;
 
@@ -20,7 +22,7 @@ namespace MemClientGame.Assets.Scripts.Controller
         {
             DesiredPosition = transform.position;
             _animator = GetComponentInChildren<Animator>();
-            _controllerHealthbar = GetComponentInChildren<ControllerHealthbar>();
+            _controllerTag = GetComponentInChildren<ControllerTag>();
         }
 
         public void Update()
@@ -40,9 +42,10 @@ namespace MemClientGame.Assets.Scripts.Controller
                 transform.eulerAngles = new Vector3(0, angle, 0);
             }
             
-            if (_controllerHealthbar != null)
+            if (_controllerTag != null)
             {
-                _controllerHealthbar.HealthPercent = Mathf.Clamp01(Health / HealthMax);
+                _controllerTag.HealthPercent = Mathf.Clamp01(Health / HealthMax);
+                _controllerTag.EnergyPercent = Mathf.Clamp01(Energy / EnergyMax);
             }
         }
     }
