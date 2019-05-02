@@ -60,7 +60,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 40
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -159,7 +159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameManager: {fileID: 0}
-  OffsetCamera: {x: 0, y: 10, z: -5}
+  OffsetCamera: {x: 0, y: 15, z: -7}
   SpeedCamera: 0.05
   BorderThickness: 10
   IsFocusingPlayer: 1

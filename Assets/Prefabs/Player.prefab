@@ -51,6 +51,8 @@ MonoBehaviour:
   SpeedLerp: 0.085
   LocomationAnimationSmoothTime: 0.125
   LocomationAnimationSpeedPercent: 0
+  Health: 0
+  HealthMax: 0
   PlayerId: 
 --- !u!65 &-2584566175234616659
 BoxCollider:
@@ -187,7 +189,7 @@ PrefabInstance:
     - target: {fileID: 1287946948945165086, guid: be11ec8b83ecc24438eda8d5b55a5b1c,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 2.2
+      value: 2.4
       objectReference: {fileID: 0}
     - target: {fileID: 1287946948945165086, guid: be11ec8b83ecc24438eda8d5b55a5b1c,
         type: 3}
