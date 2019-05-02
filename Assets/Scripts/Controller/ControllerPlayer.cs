@@ -31,7 +31,9 @@ namespace MemClientGame.Assets.Scripts.Controller
             if (DesiredRotation != null)
             {
                 var t = Time.deltaTime / SpeedLerp;
-                transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, DesiredRotation, t);
+                
+                float angle = Mathf.LerpAngle(transform.eulerAngles.y, DesiredRotation.y, t);
+                transform.eulerAngles = new Vector3(0, angle, 0);
             }
         }
     }
