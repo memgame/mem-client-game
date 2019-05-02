@@ -182,3 +182,5 @@ MonoBehaviour:
   DefaultCursor: {fileID: 2800000, guid: 44ab20cdcf81931488387a334cb1041f, type: 3}
   AttackCursor: {fileID: 2800000, guid: b1a8bf4ffe242e445b08e3d1568d0057, type: 3}
   CursorHotspot: {x: 0, y: 0}
+  MoveToIndicator: {fileID: 6714583204695565658, guid: bc9ee324695ef2945ad7ed1a80ce1f26,
+    type: 3}

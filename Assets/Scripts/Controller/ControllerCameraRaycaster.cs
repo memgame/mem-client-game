@@ -10,8 +10,10 @@ namespace MemClientGame.Assets.Scripts.Controller
         public Texture2D DefaultCursor = null;
         public Texture2D AttackCursor = null;
         public Vector2 CursorHotspot = new Vector2(0, 0);
+        public GameObject MoveToIndicator = null;
 
         private GameManager _gameManager = null;
+        private GameObject _lastMoveToIndicator = null;
         Rect _screenRectAtStartGame = new Rect(0, 0, Screen.width, Screen.height);
         // Start is called before the first frame update
         void Start()
@@ -90,6 +92,17 @@ namespace MemClientGame.Assets.Scripts.Controller
                         hitInfo.point.z
                     }
                 });
+
+                
+                if (_lastMoveToIndicator)
+                {
+                    Destroy(_lastMoveToIndicator);
+                }
+                if (MoveToIndicator != null)
+                {
+                    _lastMoveToIndicator = Instantiate(MoveToIndicator, new Vector3(hitInfo.point.x, 0, hitInfo.point.z), Quaternion.identity);
+                    Destroy(_lastMoveToIndicator, 1);
+                }
             }
             return false;
         }
