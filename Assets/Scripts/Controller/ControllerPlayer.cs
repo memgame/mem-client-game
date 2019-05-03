@@ -14,6 +14,17 @@ namespace MemClientGame.Assets.Scripts.Controller
         public float Energy;
         public float EnergyMax;
         public string PlayerId = null;
+
+        private bool _isAlive = true;
+        public bool IsAlive
+         {
+            get { return _isAlive; }
+            set
+            {
+                _isAlive = value;
+                _animator.SetBool("IsAlive", _isAlive);
+            }
+        }
         private ControllerTag _controllerTag;
 
         private Animator _animator;

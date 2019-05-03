@@ -90,7 +90,11 @@ namespace MemClientGame.Assets.Scripts.Network.StateHandlers
                             playerController.EnergyMax = float.Parse(obj.Value.ToString());
                             break;
                         }
-                            
+                        case "isAlive":
+                        {
+                            playerController.IsAlive = bool.Parse(obj.Value.ToString());
+                            break;
+                        }   
                     }
                 });
             };
