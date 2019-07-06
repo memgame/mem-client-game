@@ -83,7 +83,7 @@ namespace MemClientGame.Assets.Scripts.Controller
                 Debug.Log(hitInfo.point);
                 _gameManager.GameRoom.Send(new
                 {
-                    ACTION_TYPE = "MOVE_PLAYER_TO",
+                    ACTION_TYPE = "MOVE_UNIT_TO",
                     payload = new
                     {
                         hitInfo.point.x,

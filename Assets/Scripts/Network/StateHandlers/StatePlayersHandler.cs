@@ -20,6 +20,7 @@ namespace MemClientGame.Assets.Scripts.Network.StateHandlers
 
         private void OnAddPlayer(object sender, KeyValueEventArgs<Player, string> e)
         {
+            /*
             GameObject player = Object.Instantiate(
                 _gameManager.PrefabPlayer,
                 new Vector3(e.Value.position.x, e.Value.position.y, e.Value.position.z),
@@ -98,6 +99,7 @@ namespace MemClientGame.Assets.Scripts.Network.StateHandlers
                     }
                 });
             };
+            */
         }
 
         private void OnRemovePlayer(object sender, KeyValueEventArgs<Player, string> e)

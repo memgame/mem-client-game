@@ -8,17 +8,11 @@
 using Colyseus.Schema;
 
 namespace Mem.Models {
-	public class Player : Schema {
+	public class BaseEntity : Schema {
 		[Type(0, "string")]
 		public string id = "";
 
 		[Type(1, "string")]
-		public string name = "";
-
-		[Type(2, "string")]
-		public string team = "";
-
-		[Type(3, "string")]
-		public string unitId = "";
+		public string type = "";
 	}
 }
