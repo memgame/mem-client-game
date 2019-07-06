@@ -56,6 +56,7 @@ namespace Colyseus
 		public Client (string _endpoint, string _id = null)
 		{
 			Id = _id;
+			endpoint = new UriBuilder(new Uri (_endpoint));
 
 			connection = CreateConnection();
 			connection.OnClose += (sender, e) =>
